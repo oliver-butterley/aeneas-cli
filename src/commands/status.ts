@@ -48,7 +48,6 @@ export async function statusCommand(
   console.log(`  Repo:          ${config.aeneas.repo}`);
   console.log(`  Charon:        ${charonBin ?? chalk.red("not found")}`);
   console.log(`  Aeneas:        ${aeneasBin ?? chalk.red("not found")}`);
-  console.log(`  Backend:       lean`);
   console.log(`  Extract from:  ${config.charon.start_from.length} modules`);
   console.log(`  Excludes:      ${config.charon.exclude.length} patterns`);
   console.log(`  Tweaks:        ${config.tweaks.substitutions.length} substitutions`);

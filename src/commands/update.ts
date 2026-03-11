@@ -17,7 +17,7 @@ export async function updateCommand(
   config: AeneasConfig,
   root: string,
 ): Promise<void> {
-  console.log(chalk.bold("\n=== Update Aeneas ===\n"));
+  console.log(chalk.bold("\n=== Select Aeneas version ===\n"));
 
   // Step 1: List remote branches
   const branches = await git.lsRemoteBranches(config.aeneas.repo);
@@ -133,7 +133,7 @@ export async function updateCommand(
 
   // Step 4: Ask to install
   const doInstall = await select({
-    message: "Install now?",
+    message: "Clone and build now?",
     choices: [
       { name: "Yes", value: true },
       { name: "No", value: false },

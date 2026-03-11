@@ -63,7 +63,7 @@ export async function showMenu(
       choices: [
         { name: "Extract to Lean", value: "extract" },
         { name: "Clone and build Aeneas", value: "install" },
-        { name: "Update Aeneas", value: "update" },
+        { name: "Select Aeneas version", value: "update" },
         { name: "Show status", value: "status" },
         { name: "Exit", value: "exit" },
       ],
