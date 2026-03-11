@@ -98,6 +98,8 @@ export async function updateCommand(
     };
   });
 
+  console.log(chalk.dim("  Tip: For older commits, edit aeneas-config.yml and lakefile.toml manually.\n"));
+
   const commitChoice = await select({
     message: "Select commit:",
     choices: [
