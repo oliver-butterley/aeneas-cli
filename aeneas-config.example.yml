@@ -1,0 +1,37 @@
+# Aeneas extraction configuration
+# See: https://github.com/AeneasVerif/aeneas
+# Generate this file with: aeneas-cli init
+
+aeneas:
+  commit: "main" # commit hash or branch name
+  repo: "https://github.com/AeneasVerif/aeneas.git"
+
+crate:
+  dir: "." # path to your Rust crate (relative to project root)
+  name: "my_crate" # crate name as in Cargo.toml
+
+charon:
+  preset: aeneas
+  cargo_args: [] # extra cargo args, e.g. ["--no-default-features", "--features", "alloc"]
+  start_from: # Rust module paths to extract
+    - "my_crate::module_a"
+    - "my_crate::module_b"
+  exclude: # patterns to exclude from extraction
+    - "my_crate::{impl core::fmt::Debug for _}"
+  opaque: [] # opaque declarations
+
+aeneas_args:
+  options:
+    - loops-to-rec
+    - split-files
+  dest: "LeanOutput" # output directory for generated Lean files
+
+# Post-extraction tweaks: literal find/replace applied in order
+tweaks:
+  files:
+    - "Funs.lean"
+    - "Types.lean"
+  substitutions: []
+    # Example:
+    # - find: "text to find"
+    #   replace: "replacement text"
