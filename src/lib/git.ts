@@ -62,11 +62,10 @@ export interface CommitInfo {
 }
 
 export async function commitInfo(dir: string): Promise<CommitInfo> {
-  const output = await run(
-    "git",
-    ["log", "-1", "--format=%H%n%h%n%cd%n%s", "--date=short"],
-    { cwd: dir, silent: true },
-  );
+  const output = await run("git", ["log", "-1", "--format=%H%n%h%n%cd%n%s", "--date=short"], {
+    cwd: dir,
+    silent: true,
+  });
   const lines = output.split("\n");
   return {
     hash: lines[0] ?? "",
@@ -88,10 +87,7 @@ export async function getLocalCommit(repoDir: string): Promise<string | null> {
   }
 }
 
-export async function warnPinMismatch(
-  repoDir: string,
-  configCommit: string,
-): Promise<boolean> {
+export async function warnPinMismatch(repoDir: string, configCommit: string): Promise<boolean> {
   const localCommit = await getLocalCommit(repoDir);
   if (localCommit && !localCommit.startsWith(configCommit)) {
     console.log(

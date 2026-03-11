@@ -9,10 +9,7 @@ import { extractCommand } from "./commands/extract.js";
 import { installCommand } from "./commands/install.js";
 import { updateCommand } from "./commands/update.js";
 
-async function showHeader(
-  config: AeneasConfig,
-  root: string,
-): Promise<void> {
+async function showHeader(config: AeneasConfig, root: string): Promise<void> {
   const repoDir = getAeneasRepoDir(root);
   const localInstall = fs.existsSync(repoDir);
 
@@ -51,10 +48,7 @@ async function showHeader(
   console.log();
 }
 
-export async function showMenu(
-  config: AeneasConfig,
-  root: string,
-): Promise<void> {
+export async function showMenu(config: AeneasConfig, root: string): Promise<void> {
   while (true) {
     await showHeader(config, root);
 

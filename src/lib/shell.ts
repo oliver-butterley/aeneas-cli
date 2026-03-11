@@ -12,13 +12,8 @@ export interface RunOptions {
   silent?: boolean;
 }
 
-export async function run(
-  cmd: string,
-  args: string[],
-  opts?: RunOptions,
-): Promise<string> {
-  const spinner =
-    opts?.label && !opts?.silent ? ora(opts.label).start() : null;
+export async function run(cmd: string, args: string[], opts?: RunOptions): Promise<string> {
+  const spinner = opts?.label && !opts?.silent ? ora(opts.label).start() : null;
 
   const execaOpts: ExecaOptions = {
     cwd: opts?.cwd,
@@ -56,11 +51,7 @@ export async function run(
   }
 }
 
-export async function runStreaming(
-  cmd: string,
-  args: string[],
-  opts?: RunOptions,
-): Promise<void> {
+export async function runStreaming(cmd: string, args: string[], opts?: RunOptions): Promise<void> {
   const execaOpts: ExecaOptions = {
     cwd: opts?.cwd,
     env: opts?.env ? { ...process.env, ...opts.env } : undefined,
@@ -100,10 +91,9 @@ export async function runStreaming(
     }
 
     if (result.exitCode !== 0) {
-      throw new AeneasToolError(
-        `Command failed: ${cmd} ${args.join(" ")}`,
-        { hint: opts?.logFile ? `See log: ${opts.logFile}` : undefined },
-      );
+      throw new AeneasToolError(`Command failed: ${cmd} ${args.join(" ")}`, {
+        hint: opts?.logFile ? `See log: ${opts.logFile}` : undefined,
+      });
     }
   } catch (err) {
     if (err instanceof AeneasToolError) throw err;

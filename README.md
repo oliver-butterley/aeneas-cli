@@ -1,5 +1,7 @@
 # aeneas-cli
 
+[![npm version](https://img.shields.io/npm/v/aeneas-cli.svg)](https://www.npmjs.com/package/aeneas-cli)
+
 CLI tool for managing [Aeneas](https://github.com/AeneasVerif/aeneas) extraction from Rust to Lean. Handles the full pipeline: Charon (Rust → LLBC) → Aeneas (LLBC → Lean) → post-extraction tweaks.
 
 ## Prerequisites
@@ -30,15 +32,15 @@ npx aeneas-cli
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `aeneas-cli` | Interactive menu (default) |
-| `aeneas-cli init` | Create `aeneas-config.yml` in current directory |
-| `aeneas-cli extract` | Run Charon → Aeneas → tweaks pipeline |
-| `aeneas-cli extract --dry-run` | Show commands without executing |
-| `aeneas-cli install` | Clone and build Aeneas locally in `.aeneas/` |
-| `aeneas-cli update` | Pick a new branch/commit, update config, rebuild |
-| `aeneas-cli status` | Show version info, check config pin matches local build |
+| Command                        | Description                                             |
+| ------------------------------ | ------------------------------------------------------- |
+| `aeneas-cli`                   | Interactive menu (default)                              |
+| `aeneas-cli init`              | Create `aeneas-config.yml` in current directory         |
+| `aeneas-cli extract`           | Run Charon → Aeneas → tweaks pipeline                   |
+| `aeneas-cli extract --dry-run` | Show commands without executing                         |
+| `aeneas-cli install`           | Clone and build Aeneas locally in `.aeneas/`            |
+| `aeneas-cli update`            | Pick a new branch/commit, update config, rebuild        |
+| `aeneas-cli status`            | Show version info, check config pin matches local build |
 
 All commands accept `-c, --config <path>` to specify a custom config file.
 
@@ -48,28 +50,28 @@ The tool reads `aeneas-config.yml` from your project root (walks up from cwd to 
 
 ```yaml
 aeneas:
-  commit: "61db7984cbda8e..."   # pinned commit hash
+  commit: "61db7984cbda8e..." # pinned commit hash
   repo: "https://github.com/AeneasVerif/aeneas.git"
 
 crate:
-  dir: "my-crate"               # path to the Rust crate
-  name: "my_crate"              # crate name as in Cargo.toml
+  dir: "my-crate" # path to the Rust crate
+  name: "my_crate" # crate name as in Cargo.toml
 
 charon:
   preset: aeneas
   cargo_args: ["--no-default-features", "--features", "alloc"]
-  start_from:                   # modules to extract
+  start_from: # modules to extract
     - "my_crate::module_a"
     - "my_crate::module_b"
-  exclude:                      # patterns to exclude
+  exclude: # patterns to exclude
     - "my_crate::{impl core::fmt::Debug for _}"
-  opaque: []                    # opaque declarations
+  opaque: [] # opaque declarations
 
 aeneas_args:
   options:
     - loops-to-rec
     - split-files
-  dest: "LeanOutput"            # output directory for generated files
+  dest: "LeanOutput" # output directory for generated files
 
 tweaks:
   files: ["Funs.lean", "Types.lean"]
@@ -104,6 +106,7 @@ If you have `charon` and `aeneas` on your PATH (installed globally or via anothe
 ## Updating Aeneas
 
 `aeneas-cli update` lets you interactively pick a branch and commit from the Aeneas repo, then updates:
+
 - `aeneas-config.yml` with the new commit hash
 - `lakefile.toml` rev (if it contains an Aeneas dependency)
 

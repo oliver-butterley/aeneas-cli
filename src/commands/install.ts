@@ -6,10 +6,7 @@ import { getAeneasDir, getAeneasRepoDir, findBinary } from "../lib/paths.js";
 import * as git from "../lib/git.js";
 import * as build from "../lib/build.js";
 
-export async function installCommand(
-  config: AeneasConfig,
-  root: string,
-): Promise<void> {
+export async function installCommand(config: AeneasConfig, root: string): Promise<void> {
   console.log(chalk.bold("\n=== Clone and Build Aeneas ===\n"));
 
   const repoDir = getAeneasRepoDir(root);
@@ -87,9 +84,7 @@ export async function installCommand(
   const aeneasBin = await findBinary("aeneas", root);
 
   if (!charonBin || !aeneasBin) {
-    console.log(
-      chalk.red("  ⚠ Build completed but binaries not found at expected paths"),
-    );
+    console.log(chalk.red("  ⚠ Build completed but binaries not found at expected paths"));
   } else {
     console.log(chalk.bold.green("=== Build complete! ==="));
     console.log(`  Charon: ${charonBin}`);
@@ -99,7 +94,5 @@ export async function installCommand(
   console.log(
     chalk.dim("\n  Tip: You can also install Aeneas globally and aeneas-cli will find it on PATH."),
   );
-  console.log(
-    chalk.dim("  See: https://github.com/AeneasVerif/aeneas"),
-  );
+  console.log(chalk.dim("  See: https://github.com/AeneasVerif/aeneas"));
 }

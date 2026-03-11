@@ -11,6 +11,8 @@ export default defineConfig({
   bundle: true,
   noExternal: [/.*/],
   external: nodeBuiltins,
-  banner: { js: "#!/usr/bin/env node\nimport{createRequire}from'module';const require=createRequire(import.meta.url);" },
+  banner: {
+    js: "#!/usr/bin/env node\nimport{createRequire}from'module';const require=createRequire(import.meta.url);",
+  },
   shims: true,
 });

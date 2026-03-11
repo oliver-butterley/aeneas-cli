@@ -26,7 +26,10 @@ export async function initCommand(): Promise<void> {
 
   const crateName = await input({
     message: "Crate name (as in Cargo.toml):",
-    default: crateDir === "." ? path.basename(process.cwd()).replace(/-/g, "_") : crateDir.replace(/-/g, "_"),
+    default:
+      crateDir === "."
+        ? path.basename(process.cwd()).replace(/-/g, "_")
+        : crateDir.replace(/-/g, "_"),
   });
 
   const repo = await input({

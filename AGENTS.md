@@ -34,19 +34,24 @@ The `aeneas-config.yml` has these sections:
 ## Common tasks
 
 ### Adding a new module to extraction
+
 Add the module path to `charon.start_from` in `aeneas-config.yml`, then run `aeneas-cli extract`.
 
 ### Excluding a problematic function/trait
+
 Add the full path pattern to `charon.exclude`. Common exclusions:
+
 - `{impl core::fmt::Debug for _}` — Debug impls
 - `{impl core::hash::Hash for _}` — Hash impls
 - `{impl core::iter::traits::accum::Sum<_> for _}` — Iterator traits
 - `{impl zeroize::Zeroize for _}` — Zeroize impls
 
 ### Adding/modifying tweaks
+
 Tweaks are literal `find`/`replace` pairs in the `substitutions` list. Order matters — earlier substitutions run first. After modifying tweaks, run `aeneas-cli extract` and check for warnings about unmatched substitutions.
 
 ### Updating Aeneas version
+
 Run `aeneas-cli update` to pick a new commit, or manually edit `aeneas.commit` in the config and run `aeneas-cli install`.
 
 ## Troubleshooting extraction

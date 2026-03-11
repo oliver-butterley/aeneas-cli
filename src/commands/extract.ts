@@ -120,14 +120,15 @@ export async function extractCommand(
       }
       const matched = applyTweaks(filePath, config.tweaks.substitutions);
       matchedPerFile.push(matched);
-      console.log(chalk.green(`  ✓ Tweaks applied to ${file} (${matched.size} substitutions matched)`));
+      console.log(
+        chalk.green(`  ✓ Tweaks applied to ${file} (${matched.size} substitutions matched)`),
+      );
     }
     warnUnmatchedTweaks(config.tweaks.substitutions, matchedPerFile);
   }
 
   // Step 4: Sync lean toolchain
   syncLeanToolchain(root);
-
 }
 
 function syncLeanToolchain(root: string): void {
@@ -148,10 +149,7 @@ function syncLeanToolchain(root: string): void {
   const aeneasVersion = fs.readFileSync(aeneasToolchain, "utf-8").trim();
 
   if (projectVersion !== aeneasVersion) {
-    console.log(
-      chalk.bold("\nSyncing Lean toolchain:"),
-      `${projectVersion} → ${aeneasVersion}`,
-    );
+    console.log(chalk.bold("\nSyncing Lean toolchain:"), `${projectVersion} → ${aeneasVersion}`);
     fs.writeFileSync(projectToolchain, aeneasVersion + "\n", "utf-8");
     console.log(chalk.green("  ✓ lean-toolchain updated"));
   }

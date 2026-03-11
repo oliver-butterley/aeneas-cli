@@ -10,10 +10,7 @@ export interface Substitution {
  * Apply substitutions to a single file.
  * Returns a Set of substitution indices that matched in this file.
  */
-export function applyTweaks(
-  filePath: string,
-  substitutions: Substitution[],
-): Set<number> {
+export function applyTweaks(filePath: string, substitutions: Substitution[]): Set<number> {
   let content = fs.readFileSync(filePath, "utf-8");
   const matched = new Set<number>();
 

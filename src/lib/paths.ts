@@ -13,10 +13,9 @@ export function getProjectRoot(from?: string): string {
     }
     const parent = path.dirname(dir);
     if (parent === dir) {
-      throw new ConfigError(
-        `Could not find ${CONFIG_FILENAME} in any parent directory`,
-        { hint: `Create ${CONFIG_FILENAME} in your project root, or run 'aeneas-cli init'` },
-      );
+      throw new ConfigError(`Could not find ${CONFIG_FILENAME} in any parent directory`, {
+        hint: `Create ${CONFIG_FILENAME} in your project root, or run 'aeneas-cli init'`,
+      });
     }
     dir = parent;
   }
@@ -30,10 +29,7 @@ export function getAeneasRepoDir(root: string): string {
   return path.join(getAeneasDir(root), "aeneas");
 }
 
-export async function findBinary(
-  name: "charon" | "aeneas",
-  root: string,
-): Promise<string | null> {
+export async function findBinary(name: "charon" | "aeneas", root: string): Promise<string | null> {
   const repoDir = getAeneasRepoDir(root);
 
   // Check local .aeneas/ install first

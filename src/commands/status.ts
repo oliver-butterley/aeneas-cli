@@ -5,10 +5,7 @@ import { getAeneasRepoDir, findBinary } from "../lib/paths.js";
 import * as git from "../lib/git.js";
 import { VERSION } from "../version.js";
 
-export async function statusCommand(
-  config: AeneasConfig,
-  root: string,
-): Promise<void> {
+export async function statusCommand(config: AeneasConfig, root: string): Promise<void> {
   const repoDir = getAeneasRepoDir(root);
   const localInstall = fs.existsSync(repoDir);
 

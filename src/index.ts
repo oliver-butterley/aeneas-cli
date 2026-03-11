@@ -76,8 +76,7 @@ async function main(): Promise<void> {
     // Handle Ctrl+C gracefully
     if (
       err instanceof Error &&
-      (err.message.includes("User force closed") ||
-        err.message.includes("ExitPromptError"))
+      (err.message.includes("User force closed") || err.message.includes("ExitPromptError"))
     ) {
       console.log("\nBye!");
       process.exit(0);

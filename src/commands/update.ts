@@ -13,10 +13,7 @@ import { getAeneasDir, getAeneasRepoDir } from "../lib/paths.js";
 import * as git from "../lib/git.js";
 import { installCommand } from "./install.js";
 
-export async function updateCommand(
-  config: AeneasConfig,
-  root: string,
-): Promise<void> {
+export async function updateCommand(config: AeneasConfig, root: string): Promise<void> {
   console.log(chalk.bold("\n=== Select Aeneas version ===\n"));
 
   // Step 1: List remote branches
@@ -69,7 +66,7 @@ export async function updateCommand(
     .split("\n")
     .filter(Boolean)
     .map((line) => {
-      const [hash, shortHash, date, _time, _tz, ...rest] = line.split(" ");
+      const [hash, shortHash, date, , , ...rest] = line.split(" ");
       return {
         hash,
         shortHash,
@@ -85,8 +82,7 @@ export async function updateCommand(
 
   const pinned = config.aeneas.commit;
   const commitChoices = commits.map((c, i) => {
-    const subject =
-      c.subject.length > 50 ? c.subject.substring(0, 50) + "…" : c.subject;
+    const subject = c.subject.length > 50 ? c.subject.substring(0, 50) + "…" : c.subject;
     const tags: string[] = [];
     if (i === 0) tags.push(chalk.green("latest"));
     if (c.hash.startsWith(pinned) || pinned.startsWith(c.shortHash))
@@ -98,14 +94,13 @@ export async function updateCommand(
     };
   });
 
-  console.log(chalk.dim("  Tip: For older commits, edit aeneas-config.yml and lakefile.toml manually.\n"));
+  console.log(
+    chalk.dim("  Tip: For older commits, edit aeneas-config.yml and lakefile.toml manually.\n"),
+  );
 
   const commitChoice = await select({
     message: "Select commit:",
-    choices: [
-      ...commitChoices,
-      { name: chalk.dim("← Back"), value: "__back__" },
-    ],
+    choices: [...commitChoices, { name: chalk.dim("← Back"), value: "__back__" }],
   });
 
   if (commitChoice === "__back__") return;

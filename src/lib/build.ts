@@ -31,21 +31,16 @@ export async function checkDependencies(): Promise<void> {
     const hints = missing
       .map((dep) => `  ${dep}: ${INSTALL_HINTS[dep] ?? "install and add to PATH"}`)
       .join("\n");
-    throw new DependencyError(
-      `Missing dependencies: ${missing.join(", ")}`,
-      { hint: `Install the missing tools:\n${hints}` },
-    );
+    throw new DependencyError(`Missing dependencies: ${missing.join(", ")}`, {
+      hint: `Install the missing tools:\n${hints}`,
+    });
   }
 }
 
-export async function getOpamEnv(
-  switchName: string,
-): Promise<Record<string, string>> {
-  const output = await run(
-    "opam",
-    ["env", `--switch=${switchName}`, "--set-switch"],
-    { silent: true },
-  );
+export async function getOpamEnv(switchName: string): Promise<Record<string, string>> {
+  const output = await run("opam", ["env", `--switch=${switchName}`, "--set-switch"], {
+    silent: true,
+  });
 
   const env: Record<string, string> = {};
   // Parse lines like: VAR='value'; export VAR;
@@ -94,9 +89,7 @@ const OCAML_DEPS = [
   "progress",
 ];
 
-export async function installOcamlDeps(
-  env: Record<string, string>,
-): Promise<void> {
+export async function installOcamlDeps(env: Record<string, string>): Promise<void> {
   await run("opam", ["update"], {
     env,
     label: "Updating opam packages...",
@@ -118,11 +111,9 @@ async function installRustToolchain(toolchain: string): Promise<void> {
   await run("rustup", ["toolchain", "install", toolchain], {
     label: `Installing Rust toolchain ${toolchain}...`,
   });
-  await run(
-    "rustup",
-    ["component", "add", "--toolchain", toolchain, "rustfmt"],
-    { label: "Adding rustfmt component..." },
-  );
+  await run("rustup", ["component", "add", "--toolchain", toolchain, "rustfmt"], {
+    label: "Adding rustfmt component...",
+  });
 }
 
 export async function setupRustToolchain(charonDir: string): Promise<void> {
@@ -134,10 +125,7 @@ export async function setupRustToolchain(charonDir: string): Promise<void> {
   await installRustToolchain(toolchain);
 }
 
-export async function buildCharon(
-  aeneasDir: string,
-  env: Record<string, string>,
-): Promise<void> {
+export async function buildCharon(aeneasDir: string, env: Record<string, string>): Promise<void> {
   await run("make", ["setup-charon"], {
     cwd: aeneasDir,
     env,
@@ -145,10 +133,7 @@ export async function buildCharon(
   });
 }
 
-export async function buildAeneas(
-  aeneasDir: string,
-  env: Record<string, string>,
-): Promise<void> {
+export async function buildAeneas(aeneasDir: string, env: Record<string, string>): Promise<void> {
   await run("make", [], {
     cwd: aeneasDir,
     env,

@@ -88,8 +88,7 @@ export function loadConfig(configPath?: string): {
   config.charon.opaque = config.charon.opaque ?? [];
   config.aeneas_args.options = config.aeneas_args.options ?? [];
   config.aeneas_args.dest = config.aeneas_args.dest ?? "output";
-  config.crate.name =
-    config.crate.name ?? config.crate.dir.replace(/-/g, "_");
+  config.crate.name = config.crate.name ?? config.crate.dir.replace(/-/g, "_");
   config.tweaks = config.tweaks ?? { files: [], substitutions: [] };
   config.tweaks.files = config.tweaks.files ?? [];
   config.tweaks.substitutions = config.tweaks.substitutions ?? [];
@@ -103,15 +102,9 @@ export function shortHash(hash: string): string {
   return hash.substring(0, SHORT_HASH_LENGTH);
 }
 
-export function updateConfigCommit(
-  configPath: string,
-  newCommit: string,
-): void {
+export function updateConfigCommit(configPath: string, newCommit: string): void {
   let content = fs.readFileSync(configPath, "utf-8");
-  content = content.replace(
-    /^(\s*commit:\s*)["']?[a-f0-9]+["']?/m,
-    `$1"${shortHash(newCommit)}"`,
-  );
+  content = content.replace(/^(\s*commit:\s*)["']?[a-f0-9]+["']?/m, `$1"${shortHash(newCommit)}"`);
   fs.writeFileSync(configPath, content, "utf-8");
 }
 
@@ -136,10 +129,7 @@ export function findLakefileAeneasRev(
   return { filePath: lakefilePath, currentRev: match[1] };
 }
 
-export function updateLakefileRev(
-  filePath: string,
-  newRev: string,
-): void {
+export function updateLakefileRev(filePath: string, newRev: string): void {
   let content = fs.readFileSync(filePath, "utf-8");
 
   // Replace rev inside the aeneas [[require]] block
