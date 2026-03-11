@@ -44,7 +44,7 @@ async function showHeader(
   if (localInstall) {
     const mismatch = await git.warnPinMismatch(repoDir, config.aeneas.commit);
     if (mismatch) {
-      console.log(chalk.yellow(`  Run 'install' or 'update' to fix`));
+      console.log(chalk.yellow(`  Run 'Clone and build Aeneas' to fix`));
     }
   }
 
