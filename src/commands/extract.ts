@@ -51,7 +51,7 @@ export async function extractCommand(
   // Build aeneas args
   const aeneasArgs: string[] = [
     `-backend`,
-    config.aeneas_args.backend,
+    `lean`,
     ...config.aeneas_args.options.map((o) => `-${o}`),
     `-dest`,
     outputDir,

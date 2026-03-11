@@ -59,7 +59,6 @@ charon:
   opaque: []
 
 aeneas_args:
-  backend: lean
   options:
     - loops-to-rec
     - split-files

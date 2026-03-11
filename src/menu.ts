@@ -16,7 +16,7 @@ async function showHeader(
   const repoDir = getAeneasRepoDir(root);
   const localInstall = fs.existsSync(repoDir);
 
-  let shortHash = config.aeneas.commit.substring(0, 7);
+  let shortHash = config.aeneas.commit.substring(0, 8);
   let date = "";
   let subject = "";
 
@@ -39,6 +39,15 @@ async function showHeader(
   parts.push(source);
 
   console.log(parts.join(" · "));
+
+  // Warn if local build doesn't match config pin
+  if (localInstall) {
+    const mismatch = await git.warnPinMismatch(repoDir, config.aeneas.commit);
+    if (mismatch) {
+      console.log(chalk.yellow(`  Run 'install' or 'update' to fix`));
+    }
+  }
+
   console.log();
 }
 

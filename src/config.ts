@@ -17,7 +17,6 @@ export interface AeneasConfig {
     opaque: string[];
   };
   aeneas_args: {
-    backend: string;
     options: string[];
     dest: string;
   };
@@ -77,9 +76,6 @@ export function loadConfig(configPath?: string): {
   }
   if (!config.charon?.start_from?.length) {
     throw new ConfigError("Missing required field: charon.start_from");
-  }
-  if (!config.aeneas_args?.backend) {
-    throw new ConfigError("Missing required field: aeneas_args.backend");
   }
   if (!config.crate?.dir) {
     throw new ConfigError("Missing required field: crate.dir");

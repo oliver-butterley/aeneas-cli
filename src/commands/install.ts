@@ -5,19 +5,6 @@ import { type AeneasConfig } from "../config.js";
 import { getAeneasDir, getAeneasRepoDir, findBinary } from "../lib/paths.js";
 import * as git from "../lib/git.js";
 import * as build from "../lib/build.js";
-import { run } from "../lib/shell.js";
-
-async function getLocalCommit(repoDir: string): Promise<string | null> {
-  try {
-    const output = await run("git", ["rev-parse", "HEAD"], {
-      cwd: repoDir,
-      silent: true,
-    });
-    return output.trim();
-  } catch {
-    return null;
-  }
-}
 
 export async function installCommand(
   config: AeneasConfig,
@@ -30,7 +17,7 @@ export async function installCommand(
 
   // Check if already installed and up to date
   if (fs.existsSync(repoDir)) {
-    const localCommit = await getLocalCommit(repoDir);
+    const localCommit = await git.getLocalCommit(repoDir);
     if (localCommit && localCommit.startsWith(pinCommit)) {
       const charonBin = await findBinary("charon", root);
       const aeneasBin = await findBinary("aeneas", root);
@@ -41,10 +28,8 @@ export async function installCommand(
         return;
       }
     }
-    if (localCommit && !localCommit.startsWith(pinCommit)) {
-      console.log(
-        chalk.yellow(`  Local build (${localCommit.substring(0, 8)}) doesn't match config pin (${pinCommit.substring(0, 8)})`),
-      );
+    const mismatch = await git.warnPinMismatch(repoDir, pinCommit);
+    if (mismatch) {
       console.log(`  Rebuilding...\n`);
     }
   }

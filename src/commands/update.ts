@@ -26,17 +26,24 @@ export async function updateCommand(
     return;
   }
 
-  // Put 'main' first if it exists
+  // Put 'main' first, then sort the rest alphabetically, keep list short
   branches.sort((a, b) => {
     if (a === "main") return -1;
     if (b === "main") return 1;
     return a.localeCompare(b);
   });
+  const topBranches = branches.slice(0, 10);
 
-  const branch = await select({
+  const branchChoice = await select({
     message: "Select branch:",
-    choices: branches.map((b) => ({ name: b, value: b })),
+    choices: [
+      ...topBranches.map((b) => ({ name: b, value: b })),
+      { name: chalk.dim("← Back"), value: "__back__" },
+    ],
   });
+
+  if (branchChoice === "__back__") return;
+  const branch = branchChoice;
 
   // Step 2: Fetch and show recent commits on that branch
   const repoDir = getAeneasRepoDir(root);
@@ -52,7 +59,7 @@ export async function updateCommand(
 
   // Get recent commits on the selected branch
   const logOutput = await git.log(repoDir, {
-    count: 20,
+    count: 10,
     format: "%H %h %ci %s",
     ref: `origin/${branch}`,
   });
@@ -75,13 +82,31 @@ export async function updateCommand(
     return;
   }
 
-  const selectedHash = await select({
-    message: "Select commit:",
-    choices: commits.map((c) => ({
-      name: `${c.shortHash} ${c.date} ${c.subject}`,
+  const pinned = config.aeneas.commit;
+  const commitChoices = commits.map((c, i) => {
+    const subject =
+      c.subject.length > 50 ? c.subject.substring(0, 50) + "…" : c.subject;
+    const tags: string[] = [];
+    if (i === 0) tags.push(chalk.green("latest"));
+    if (c.hash.startsWith(pinned) || pinned.startsWith(c.shortHash))
+      tags.push(chalk.cyan("current"));
+    const suffix = tags.length > 0 ? ` ${tags.join(" ")}` : "";
+    return {
+      name: `${c.shortHash} ${c.date} ${subject}${suffix}`,
       value: c.hash,
-    })),
+    };
   });
+
+  const commitChoice = await select({
+    message: "Select commit:",
+    choices: [
+      ...commitChoices,
+      { name: chalk.dim("← Back"), value: "__back__" },
+    ],
+  });
+
+  if (commitChoice === "__back__") return;
+  const selectedHash = commitChoice;
 
   // Step 3: Update config
   const configPath = path.join(root, "aeneas-config.yml");

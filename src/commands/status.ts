@@ -2,21 +2,8 @@ import fs from "node:fs";
 import chalk from "chalk";
 import { type AeneasConfig } from "../config.js";
 import { getAeneasRepoDir, findBinary } from "../lib/paths.js";
-import { run } from "../lib/shell.js";
 import * as git from "../lib/git.js";
 import { VERSION } from "../version.js";
-
-async function getLocalCommit(repoDir: string): Promise<string | null> {
-  try {
-    const output = await run("git", ["rev-parse", "HEAD"], {
-      cwd: repoDir,
-      silent: true,
-    });
-    return output.trim();
-  } catch {
-    return null;
-  }
-}
 
 export async function statusCommand(
   config: AeneasConfig,
@@ -61,21 +48,16 @@ export async function statusCommand(
   console.log(`  Repo:          ${config.aeneas.repo}`);
   console.log(`  Charon:        ${charonBin ?? chalk.red("not found")}`);
   console.log(`  Aeneas:        ${aeneasBin ?? chalk.red("not found")}`);
-  console.log(`  Backend:       ${config.aeneas_args.backend}`);
+  console.log(`  Backend:       lean`);
   console.log(`  Extract from:  ${config.charon.start_from.length} modules`);
   console.log(`  Excludes:      ${config.charon.exclude.length} patterns`);
   console.log(`  Tweaks:        ${config.tweaks.substitutions.length} substitutions`);
 
   // Check pin mismatch
   if (localInstall) {
-    const localCommit = await getLocalCommit(repoDir);
-    if (localCommit && !localCommit.startsWith(config.aeneas.commit)) {
-      console.log(
-        chalk.yellow(
-          `\n  ⚠ Local build (${localCommit.substring(0, 8)}) doesn't match config pin (${config.aeneas.commit.substring(0, 8)})`,
-        ),
-      );
-      console.log(chalk.yellow(`    Run 'aeneas-cli install' to rebuild`));
+    const mismatch = await git.warnPinMismatch(repoDir, config.aeneas.commit);
+    if (mismatch) {
+      console.log(chalk.yellow(`  Run 'aeneas-cli install' to rebuild`));
     }
   }
 

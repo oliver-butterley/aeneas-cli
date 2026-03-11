@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import { run } from "./shell.js";
 
 export async function clone(
@@ -73,4 +74,32 @@ export async function commitInfo(dir: string): Promise<CommitInfo> {
     date: lines[2] ?? "",
     subject: lines[3] ?? "",
   };
+}
+
+export async function getLocalCommit(repoDir: string): Promise<string | null> {
+  try {
+    const output = await run("git", ["rev-parse", "HEAD"], {
+      cwd: repoDir,
+      silent: true,
+    });
+    return output.trim();
+  } catch {
+    return null;
+  }
+}
+
+export async function warnPinMismatch(
+  repoDir: string,
+  configCommit: string,
+): Promise<boolean> {
+  const localCommit = await getLocalCommit(repoDir);
+  if (localCommit && !localCommit.startsWith(configCommit)) {
+    console.log(
+      chalk.yellow(
+        `⚠ Local build (${localCommit.substring(0, 8)}) doesn't match config pin (${configCommit.substring(0, 8)})`,
+      ),
+    );
+    return true;
+  }
+  return false;
 }
