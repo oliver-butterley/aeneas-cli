@@ -4,6 +4,7 @@ import chalk from "chalk";
 import { select } from "@inquirer/prompts";
 import {
   type AeneasConfig,
+  shortHash,
   updateConfigCommit,
   findLakefileAeneasRev,
   updateLakefileRev,
@@ -140,8 +141,8 @@ export async function updateCommand(
   });
 
   if (doInstall) {
-    // Reload config with new commit
-    config.aeneas.commit = selectedHash;
+    // Reload config with new commit (short hash)
+    config.aeneas.commit = shortHash(selectedHash);
     await installCommand(config, root);
   }
 }

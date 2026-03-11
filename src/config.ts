@@ -97,6 +97,12 @@ export function loadConfig(configPath?: string): {
   return { config, root };
 }
 
+export const SHORT_HASH_LENGTH = 8;
+
+export function shortHash(hash: string): string {
+  return hash.substring(0, SHORT_HASH_LENGTH);
+}
+
 export function updateConfigCommit(
   configPath: string,
   newCommit: string,
@@ -104,7 +110,7 @@ export function updateConfigCommit(
   let content = fs.readFileSync(configPath, "utf-8");
   content = content.replace(
     /^(\s*commit:\s*)["']?[a-f0-9]+["']?/m,
-    `$1"${newCommit}"`,
+    `$1"${shortHash(newCommit)}"`,
   );
   fs.writeFileSync(configPath, content, "utf-8");
 }
@@ -139,7 +145,7 @@ export function updateLakefileRev(
   // Replace rev inside the aeneas [[require]] block
   content = content.replace(
     /(\[\[require\]\][^[]*?name\s*=\s*"aeneas"[^[]*?rev\s*=\s*")([a-f0-9]+)(")/s,
-    `$1${newRev}$3`,
+    `$1${shortHash(newRev)}$3`,
   );
   fs.writeFileSync(filePath, content, "utf-8");
 }
