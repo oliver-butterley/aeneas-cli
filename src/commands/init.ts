@@ -3,6 +3,8 @@ import path from "node:path";
 import chalk from "chalk";
 import { input, confirm } from "@inquirer/prompts";
 import { ConfigError } from "../lib/errors.js";
+import { lsRemoteHead } from "../lib/git.js";
+import { SHORT_HASH_LENGTH } from "../config.js";
 
 const CONFIG_FILENAME = "aeneas-config.yml";
 
@@ -75,7 +77,8 @@ export async function initCommand(opts?: { interactive?: boolean }): Promise<voi
   let crateDir = detected.dir;
   let crateName = detected.name;
   let repo = DEFAULT_REPO;
-  let commit = "main";
+  const latestHash = await lsRemoteHead(repo, "refs/heads/main");
+  let commit = latestHash ? latestHash.substring(0, SHORT_HASH_LENGTH) : "main";
   let dest = "LeanOutput";
 
   if (opts?.interactive) {
