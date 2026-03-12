@@ -38,9 +38,6 @@ async function showHeader(config: AeneasConfig, root: string): Promise<void> {
   parts.push(source);
 
   console.log(parts.join(" · "));
-  console.log(
-    chalk.dim("  Something can be improved with this CLI? Issue/PR: https://www.npmjs.com/package/aeneas-cli"),
-  );
 
   // Warn if local build doesn't match config pin
   if (localInstall) {
@@ -111,6 +108,10 @@ export async function showMenu(config: AeneasConfig, root: string): Promise<void
         return;
     }
 
+    console.log();
+    console.log(
+      chalk.dim("Something can be improved with this CLI? Issue/PR: https://www.npmjs.com/package/aeneas-cli"),
+    );
     console.log();
   }
 }
