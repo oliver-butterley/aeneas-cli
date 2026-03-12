@@ -39,27 +39,34 @@ function buildConfigContent(opts: {
 # See: https://github.com/oliver-butterley/aeneas-cli
 
 aeneas:
-  commit: "${opts.commit}"
+  commit: "${opts.commit}" # pinned commit hash (or branch name)
   repo: "${opts.repo}"
 
 charon:
-  cargo_args: []
-  start_from: []
-  exclude: []
-  opaque: []
+  cargo_args: [] # extra cargo flags, e.g. ["--no-default-features", "--features", "alloc"]
+  start_from: [] # Rust paths to extract, e.g. ["my_crate::module_a", "my_crate::module_b"]
+  exclude: [] # patterns to skip, e.g. ["my_crate::{impl core::fmt::Debug for _}"]
+  opaque: [] # treat as opaque (no body extracted), e.g. ["my_crate::internal"]
 
 aeneas_args:
   options:
     - split-files
-  dest: "${opts.dest}"
+  dest: "${opts.dest}" # output directory for generated Lean files
 
 crate:
-  dir: "${opts.crateDir}"
-  name: "${opts.crateName}"
+  dir: "${opts.crateDir}" # path to Rust crate (relative to project root)
+  name: "${opts.crateName}" # package name from Cargo.toml
 
+# Post-extraction find/replace applied to generated Lean files.
+# Useful for patching output that doesn't compile or needs adjustment.
 tweaks:
-  files: []
+  files: [] # Lean files to patch, e.g. ["Funs.lean", "Types.lean"]
   substitutions: []
+  # Example:
+  # - find: "someGeneratedName"
+  #   replace: "betterName"
+  # - find: "open Result"
+  #   replace: "open Result\\nopen MyModule"
 `;
 }
 
