@@ -77,8 +77,15 @@ export async function showInitMenu(): Promise<void> {
   }
 }
 
-export async function showMenu(config: AeneasConfig, root: string): Promise<void> {
+export async function showMenu(initialConfig: AeneasConfig, root: string): Promise<void> {
+  let config = initialConfig;
   while (true) {
+    // Reload config each iteration to pick up file changes
+    try {
+      ({ config } = loadConfig());
+    } catch {
+      // fall back to previous config
+    }
     await showHeader(config, root);
 
     const choices = [
