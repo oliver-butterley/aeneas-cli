@@ -71,7 +71,7 @@ program.action(async () => {
     const { config, root } = loadConfig(program.opts().config);
     await showMenu(config, root);
   } catch (err) {
-    if (err instanceof ConfigError && err.message.includes("not found")) {
+    if (err instanceof ConfigError) {
       await showInitMenu();
     } else {
       throw err;
