@@ -109,6 +109,7 @@ export async function updateCommand(config: AeneasConfig, root: string): Promise
   // Step 3: Update config
   const configPath = path.join(root, "aeneas-config.yml");
   updateConfigCommit(configPath, selectedHash);
+  config.aeneas.commit = shortHash(selectedHash);
   console.log(chalk.green(`  ✓ Updated aeneas-config.yml to ${selectedHash.substring(0, 8)}`));
 
   // Step 3b: Update lakefile.toml if it has an aeneas rev
@@ -138,8 +139,6 @@ export async function updateCommand(config: AeneasConfig, root: string): Promise
   });
 
   if (doInstall) {
-    // Reload config with new commit (short hash)
-    config.aeneas.commit = shortHash(selectedHash);
     await installCommand(config, root);
   }
 }
