@@ -112,7 +112,11 @@ export async function showMenu(config: AeneasConfig, root: string): Promise<void
         await statusCommand(config, root);
         break;
       case "lean-init":
-        console.log(chalk.yellow("\n  Coming soon: scaffold Lean project boilerplate (lakefile, lean-toolchain, etc.)"));
+        console.log(
+          chalk.yellow(
+            "\n  Coming soon: scaffold Lean project boilerplate (lakefile, lean-toolchain, etc.)",
+          ),
+        );
         break;
       case "ci":
         await ciCommand(root);
@@ -123,7 +127,9 @@ export async function showMenu(config: AeneasConfig, root: string): Promise<void
 
     console.log();
     console.log(
-      chalk.dim("Something can be improved with this CLI? Issue/PR: https://www.npmjs.com/package/aeneas-cli"),
+      chalk.dim(
+        "Something can be improved with this CLI? Issue/PR: https://www.npmjs.com/package/aeneas-cli",
+      ),
     );
     console.log();
   }

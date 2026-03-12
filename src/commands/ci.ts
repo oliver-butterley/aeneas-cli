@@ -95,7 +95,9 @@ jobs:
 export function hasAeneasWorkflow(root: string): boolean {
   const workflowsDir = path.join(root, ".github", "workflows");
   if (!fs.existsSync(workflowsDir)) return false;
-  const files = fs.readdirSync(workflowsDir).filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"));
+  const files = fs
+    .readdirSync(workflowsDir)
+    .filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"));
   return files.some((f) => {
     const content = fs.readFileSync(path.join(workflowsDir, f), "utf-8");
     return content.includes("aeneas-cli");
