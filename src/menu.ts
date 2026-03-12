@@ -69,7 +69,7 @@ export async function showInitMenu(): Promise<void> {
   });
 
   if (action === "init") {
-    await initCommand();
+    await initCommand({ interactive: true });
     console.log();
     // Config now exists — load it and show the full menu
     const { config, root } = loadConfig();
