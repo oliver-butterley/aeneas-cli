@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
 import chalk from "chalk";
-import { input } from "@inquirer/prompts";
 import { ConfigError } from "../lib/errors.js";
 
 const CONFIG_FILENAME = "aeneas-config.yml";
@@ -17,14 +16,13 @@ function readCrateName(cargoPath: string): string | null {
 }
 
 /** Detect crate directory and name from the current working directory. */
-function detectCrate(cwd: string): { dir: string; name: string } | null {
-  // Check for Cargo.toml in cwd (single-crate project)
+function detectCrate(cwd: string): { dir: string; name: string } {
   const rootCargo = path.join(cwd, "Cargo.toml");
   const rootName = readCrateName(rootCargo);
   if (rootName) {
     return { dir: ".", name: rootName };
   }
-  return null;
+  return { dir: ".", name: "package-name" };
 }
 
 export async function initCommand(): Promise<void> {
@@ -36,49 +34,13 @@ export async function initCommand(): Promise<void> {
     });
   }
 
-  console.log(chalk.bold("\nInitialize aeneas-config.yml\n"));
-
   const detected = detectCrate(process.cwd());
-  if (detected) {
-    console.log(chalk.dim(`  Detected crate: ${detected.name} (${detected.dir})\n`));
-  }
 
-  const crateDir = await input({
-    message: "Rust crate directory (relative to project root):",
-    default: detected?.dir ?? ".",
-  });
-
-  // Re-detect if user changed the directory
-  let effectiveDetected: { dir: string; name: string } | null = null;
-  if (crateDir === detected?.dir) {
-    effectiveDetected = detected;
-  } else {
-    const cargoPath = path.join(process.cwd(), crateDir, "Cargo.toml");
-    const name = readCrateName(cargoPath);
-    if (name) {
-      effectiveDetected = { dir: crateDir, name };
-    }
-  }
-
-  const crateName = await input({
-    message: "Crate name (as in Cargo.toml):",
-    default: effectiveDetected?.name ?? "package-name",
-  });
-
-  const repo = await input({
-    message: "Aeneas git repo:",
-    default: DEFAULT_REPO,
-  });
-
-  const commit = await input({
-    message: "Aeneas commit (full hash or branch name):",
-    default: "main",
-  });
-
-  const dest = await input({
-    message: "Output directory for generated Lean files:",
-    default: "LeanOutput",
-  });
+  const crateDir = detected.dir;
+  const crateName = detected.name;
+  const repo = DEFAULT_REPO;
+  const commit = "main";
+  const dest = "LeanOutput";
 
   const content = `# Aeneas extraction configuration
 # See: https://github.com/AeneasVerif/aeneas
@@ -110,9 +72,10 @@ tweaks:
 `;
 
   fs.writeFileSync(configPath, content, "utf-8");
-  console.log(chalk.green(`\n  ✓ Created ${CONFIG_FILENAME}`));
-  console.log(`\nNext steps:`);
-  console.log(`  1. Edit ${CONFIG_FILENAME} to add your charon start_from modules`);
-  console.log(`  2. Run ${chalk.bold("aeneas-cli install")} to clone and build Aeneas`);
-  console.log(`  3. Run ${chalk.bold("aeneas-cli extract")} to generate Lean files`);
+  console.log(chalk.green(`  Created ${CONFIG_FILENAME}`));
+  if (crateName === "package-name") {
+    console.log(chalk.yellow(`  No Cargo.toml found — edit crate.name in ${CONFIG_FILENAME}`));
+  } else {
+    console.log(chalk.dim(`  Detected crate: ${crateName}`));
+  }
 }

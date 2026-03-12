@@ -1,13 +1,13 @@
 import { Command } from "commander";
 import chalk from "chalk";
 import { loadConfig } from "./config.js";
-import { AeneasToolError } from "./lib/errors.js";
+import { AeneasToolError, ConfigError } from "./lib/errors.js";
 import { statusCommand } from "./commands/status.js";
 import { extractCommand } from "./commands/extract.js";
 import { installCommand } from "./commands/install.js";
 import { updateCommand } from "./commands/update.js";
 import { initCommand } from "./commands/init.js";
-import { showMenu } from "./menu.js";
+import { showMenu, showInitMenu } from "./menu.js";
 import { VERSION } from "./version.js";
 
 const program = new Command()
@@ -58,8 +58,16 @@ program
 
 // Default action: interactive menu
 program.action(async () => {
-  const { config, root } = loadConfig(program.opts().config);
-  await showMenu(config, root);
+  try {
+    const { config, root } = loadConfig(program.opts().config);
+    await showMenu(config, root);
+  } catch (err) {
+    if (err instanceof ConfigError && err.message.includes("not found")) {
+      await showInitMenu();
+    } else {
+      throw err;
+    }
+  }
 });
 
 async function main(): Promise<void> {

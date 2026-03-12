@@ -1,13 +1,15 @@
 import fs from "node:fs";
 import chalk from "chalk";
 import { select } from "@inquirer/prompts";
-import { type AeneasConfig } from "./config.js";
+import { type AeneasConfig, loadConfig } from "./config.js";
 import { getAeneasRepoDir } from "./lib/paths.js";
+import { which } from "./lib/shell.js";
 import * as git from "./lib/git.js";
 import { statusCommand } from "./commands/status.js";
 import { extractCommand } from "./commands/extract.js";
 import { installCommand } from "./commands/install.js";
 import { updateCommand } from "./commands/update.js";
+import { initCommand } from "./commands/init.js";
 
 async function showHeader(config: AeneasConfig, root: string): Promise<void> {
   const repoDir = getAeneasRepoDir(root);
@@ -46,6 +48,32 @@ async function showHeader(config: AeneasConfig, root: string): Promise<void> {
   }
 
   console.log();
+}
+
+export async function showInitMenu(): Promise<void> {
+  const charonPath = await which("charon");
+  const aeneasPath = await which("aeneas");
+
+  console.log(chalk.bold("Aeneas CLI") + " · no config file found\n");
+  console.log(`  Charon:  ${charonPath ?? chalk.red("not found in PATH")}`);
+  console.log(`  Aeneas:  ${aeneasPath ?? chalk.red("not found in PATH")}`);
+  console.log();
+
+  const action = await select({
+    message: "What would you like to do?",
+    choices: [
+      { name: "Create aeneas-config.yml", value: "init" },
+      { name: "Exit", value: "exit" },
+    ],
+  });
+
+  if (action === "init") {
+    await initCommand();
+    console.log();
+    // Config now exists — load it and show the full menu
+    const { config, root } = loadConfig();
+    await showMenu(config, root);
+  }
 }
 
 export async function showMenu(config: AeneasConfig, root: string): Promise<void> {
