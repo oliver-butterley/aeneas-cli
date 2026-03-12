@@ -6,19 +6,23 @@
 
 - Generate GitHub CI workflow (`aeneas-cli ci`) with caching, diff check, and pinned CLI version
 - Auto-detect crate name from `Cargo.toml` during `init`
-- Non-interactive `init` command using sensible defaults
+- Default aeneas commit to latest on main (via `git ls-remote`)
+- Interactive `init` when launched from menu (prompts for each field with confirmation)
+- Non-interactive `init` command using sensible defaults (`aeneas-cli init`)
 - Initialize Lean project menu option (placeholder)
 - Feedback link in menu footer
 - npm trusted publisher workflow for automated releases
 
 ### Fixed
 
+- Show init menu when no config file exists (was crashing with "Could not find" error)
 - Exit when `charon.start_from` is empty in config
 - Allow empty args for all array config fields
 - Stream output during install steps
 
 ### Changed
 
+- Removed `loops-to-rec` from default config template
 - Updated GitHub Actions to v6 and Node.js to 24
 - CI runs on all branches, not just default
 

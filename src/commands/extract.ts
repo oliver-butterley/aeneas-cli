@@ -46,7 +46,11 @@ export async function extractCommand(
     charonArgs.push("--opaque", item);
   }
 
-  charonArgs.push("--", "-p", config.crate.dir, ...config.charon.cargo_args);
+  const cargoArgs = [...config.charon.cargo_args];
+  if (config.crate.dir !== ".") {
+    cargoArgs.unshift("-p", config.crate.name);
+  }
+  charonArgs.push("--", ...cargoArgs);
 
   // Build aeneas args
   const aeneasArgs: string[] = [
