@@ -87,6 +87,7 @@ export async function showMenu(config: AeneasConfig, root: string): Promise<void
       { name: "Select Aeneas version", value: "update" },
       { name: "Show status", value: "status" },
     ];
+    choices.push({ name: "Initialize Lean project", value: "lean-init" });
     if (!hasAeneasWorkflow(root)) {
       choices.push({ name: "Generate GitHub CI workflow", value: "ci" });
     }
@@ -109,6 +110,9 @@ export async function showMenu(config: AeneasConfig, root: string): Promise<void
         break;
       case "status":
         await statusCommand(config, root);
+        break;
+      case "lean-init":
+        console.log(chalk.yellow("\n  Coming soon: scaffold Lean project boilerplate (lakefile, lean-toolchain, etc.)"));
         break;
       case "ci":
         await ciCommand(root);
