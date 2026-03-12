@@ -10,7 +10,7 @@ import { extractCommand } from "./commands/extract.js";
 import { installCommand } from "./commands/install.js";
 import { updateCommand } from "./commands/update.js";
 import { initCommand } from "./commands/init.js";
-import { ciCommand } from "./commands/ci.js";
+import { ciCommand, hasAeneasWorkflow } from "./commands/ci.js";
 
 async function showHeader(config: AeneasConfig, root: string): Promise<void> {
   const repoDir = getAeneasRepoDir(root);
@@ -81,16 +81,20 @@ export async function showMenu(config: AeneasConfig, root: string): Promise<void
   while (true) {
     await showHeader(config, root);
 
+    const choices = [
+      { name: "Extract to Lean", value: "extract" },
+      { name: "Clone and build Aeneas", value: "install" },
+      { name: "Select Aeneas version", value: "update" },
+      { name: "Show status", value: "status" },
+    ];
+    if (!hasAeneasWorkflow(root)) {
+      choices.push({ name: "Generate GitHub CI workflow", value: "ci" });
+    }
+    choices.push({ name: "Exit", value: "exit" });
+
     const action = await select({
       message: "What would you like to do?",
-      choices: [
-        { name: "Extract to Lean", value: "extract" },
-        { name: "Clone and build Aeneas", value: "install" },
-        { name: "Select Aeneas version", value: "update" },
-        { name: "Show status", value: "status" },
-        { name: "Generate GitHub CI workflow", value: "ci" },
-        { name: "Exit", value: "exit" },
-      ],
+      choices,
     });
 
     switch (action) {

@@ -92,6 +92,16 @@ jobs:
           fi
 `;
 
+export function hasAeneasWorkflow(root: string): boolean {
+  const workflowsDir = path.join(root, ".github", "workflows");
+  if (!fs.existsSync(workflowsDir)) return false;
+  const files = fs.readdirSync(workflowsDir).filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"));
+  return files.some((f) => {
+    const content = fs.readFileSync(path.join(workflowsDir, f), "utf-8");
+    return content.includes("aeneas-cli");
+  });
+}
+
 export async function ciCommand(root: string): Promise<void> {
   const workflowFile = path.join(root, WORKFLOW_PATH);
 
