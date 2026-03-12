@@ -36,14 +36,13 @@ function buildConfigContent(opts: {
   dest: string;
 }): string {
   return `# Aeneas extraction configuration
-# See: https://github.com/AeneasVerif/aeneas
+# See: https://github.com/oliver-butterley/aeneas-cli
 
 aeneas:
   commit: "${opts.commit}"
   repo: "${opts.repo}"
 
 charon:
-  preset: aeneas
   cargo_args: []
   start_from: []
   exclude: []

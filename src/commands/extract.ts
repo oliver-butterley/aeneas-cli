@@ -34,7 +34,7 @@ export async function extractCommand(
   const logsDir = path.join(root, ".logs");
 
   // Build charon args
-  const charonArgs: string[] = ["cargo", `--preset=${config.charon.preset}`];
+  const charonArgs: string[] = ["cargo", "--preset=aeneas"];
 
   for (const item of config.charon.start_from) {
     charonArgs.push("--start-from", item);

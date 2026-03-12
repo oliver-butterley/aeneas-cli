@@ -10,7 +10,6 @@ export interface AeneasConfig {
     repo: string;
   };
   charon: {
-    preset: string;
     cargo_args: string[];
     start_from: string[];
     exclude: string[];
@@ -80,7 +79,6 @@ export function loadConfig(configPath?: string): {
 
   // Apply defaults
   config.charon = config.charon ?? ({} as AeneasConfig["charon"]);
-  config.charon.preset = config.charon.preset ?? "aeneas";
   config.charon.cargo_args = config.charon.cargo_args ?? [];
   config.charon.start_from = config.charon.start_from ?? [];
   config.charon.exclude = config.charon.exclude ?? [];
