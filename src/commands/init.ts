@@ -8,6 +8,25 @@ const CONFIG_FILENAME = "aeneas-config.yml";
 
 const DEFAULT_REPO = "https://github.com/AeneasVerif/aeneas.git";
 
+/** Read the package name from a Cargo.toml file, or return null. */
+function readCrateName(cargoPath: string): string | null {
+  if (!fs.existsSync(cargoPath)) return null;
+  const content = fs.readFileSync(cargoPath, "utf-8");
+  const match = content.match(/^\[package\][^[]*?^name\s*=\s*"([^"]+)"/ms);
+  return match?.[1] ?? null;
+}
+
+/** Detect crate directory and name from the current working directory. */
+function detectCrate(cwd: string): { dir: string; name: string } | null {
+  // Check for Cargo.toml in cwd (single-crate project)
+  const rootCargo = path.join(cwd, "Cargo.toml");
+  const rootName = readCrateName(rootCargo);
+  if (rootName) {
+    return { dir: ".", name: rootName };
+  }
+  return null;
+}
+
 export async function initCommand(): Promise<void> {
   const configPath = path.join(process.cwd(), CONFIG_FILENAME);
 
@@ -19,17 +38,31 @@ export async function initCommand(): Promise<void> {
 
   console.log(chalk.bold("\nInitialize aeneas-config.yml\n"));
 
+  const detected = detectCrate(process.cwd());
+  if (detected) {
+    console.log(chalk.dim(`  Detected crate: ${detected.name} (${detected.dir})\n`));
+  }
+
   const crateDir = await input({
     message: "Rust crate directory (relative to project root):",
-    default: ".",
+    default: detected?.dir ?? ".",
   });
+
+  // Re-detect if user changed the directory
+  let effectiveDetected: { dir: string; name: string } | null = null;
+  if (crateDir === detected?.dir) {
+    effectiveDetected = detected;
+  } else {
+    const cargoPath = path.join(process.cwd(), crateDir, "Cargo.toml");
+    const name = readCrateName(cargoPath);
+    if (name) {
+      effectiveDetected = { dir: crateDir, name };
+    }
+  }
 
   const crateName = await input({
     message: "Crate name (as in Cargo.toml):",
-    default:
-      crateDir === "."
-        ? path.basename(process.cwd()).replace(/-/g, "_")
-        : crateDir.replace(/-/g, "_"),
+    default: effectiveDetected?.name ?? "package-name",
   });
 
   const repo = await input({
