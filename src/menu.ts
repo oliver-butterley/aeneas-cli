@@ -10,6 +10,7 @@ import { extractCommand } from "./commands/extract.js";
 import { installCommand } from "./commands/install.js";
 import { updateCommand } from "./commands/update.js";
 import { initCommand } from "./commands/init.js";
+import { ciCommand } from "./commands/ci.js";
 
 async function showHeader(config: AeneasConfig, root: string): Promise<void> {
   const repoDir = getAeneasRepoDir(root);
@@ -87,6 +88,7 @@ export async function showMenu(config: AeneasConfig, root: string): Promise<void
         { name: "Clone and build Aeneas", value: "install" },
         { name: "Select Aeneas version", value: "update" },
         { name: "Show status", value: "status" },
+        { name: "Generate GitHub CI workflow", value: "ci" },
         { name: "Exit", value: "exit" },
       ],
     });
@@ -103,6 +105,9 @@ export async function showMenu(config: AeneasConfig, root: string): Promise<void
         break;
       case "status":
         await statusCommand(config, root);
+        break;
+      case "ci":
+        await ciCommand(root);
         break;
       case "exit":
         return;

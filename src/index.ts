@@ -7,6 +7,7 @@ import { extractCommand } from "./commands/extract.js";
 import { installCommand } from "./commands/install.js";
 import { updateCommand } from "./commands/update.js";
 import { initCommand } from "./commands/init.js";
+import { ciCommand } from "./commands/ci.js";
 import { showMenu, showInitMenu } from "./menu.js";
 import { VERSION } from "./version.js";
 
@@ -54,6 +55,14 @@ program
   .description("Create an aeneas-config.yml in the current directory")
   .action(async () => {
     await initCommand();
+  });
+
+program
+  .command("ci")
+  .description("Generate a GitHub Actions workflow for extraction CI")
+  .action(async () => {
+    const { root } = loadConfig(program.opts().config);
+    await ciCommand(root);
   });
 
 // Default action: interactive menu
