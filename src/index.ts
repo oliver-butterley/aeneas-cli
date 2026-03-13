@@ -8,6 +8,7 @@ import { installCommand } from "./commands/install.js";
 import { updateCommand } from "./commands/update.js";
 import { initCommand } from "./commands/init.js";
 import { ciCommand } from "./commands/ci.js";
+import { leanInitCommand } from "./commands/lean-init.js";
 import { showMenu, showInitMenu } from "./menu.js";
 import { VERSION } from "./version.js";
 
@@ -63,6 +64,14 @@ program
   .action(async () => {
     const { root } = loadConfig(program.opts().config);
     await ciCommand(root);
+  });
+
+program
+  .command("lean-init")
+  .description("Scaffold Lean project boilerplate (lakefile, lean-toolchain)")
+  .action(async () => {
+    const { config, root } = loadConfig(program.opts().config);
+    await leanInitCommand(config, root);
   });
 
 // Default action: interactive menu

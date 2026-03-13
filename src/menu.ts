@@ -11,6 +11,7 @@ import { installCommand } from "./commands/install.js";
 import { updateCommand } from "./commands/update.js";
 import { initCommand } from "./commands/init.js";
 import { ciCommand, hasAeneasWorkflow } from "./commands/ci.js";
+import { leanInitCommand } from "./commands/lean-init.js";
 
 async function showHeader(config: AeneasConfig, root: string): Promise<void> {
   const repoDir = getAeneasRepoDir(root);
@@ -119,11 +120,7 @@ export async function showMenu(initialConfig: AeneasConfig, root: string): Promi
         await statusCommand(config, root);
         break;
       case "lean-init":
-        console.log(
-          chalk.yellow(
-            "\n  Coming soon: scaffold Lean project boilerplate (lakefile, lean-toolchain, etc.)",
-          ),
-        );
+        await leanInitCommand(config, root);
         break;
       case "ci":
         await ciCommand(root);
