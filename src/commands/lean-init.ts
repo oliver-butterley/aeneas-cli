@@ -5,6 +5,24 @@ import { select, input } from "@inquirer/prompts";
 import { type AeneasConfig, shortHash } from "../config.js";
 import { getAeneasRepoDir } from "../lib/paths.js";
 
+const LEAN_WORKFLOW_PATH = ".github/workflows/lean.yml";
+
+const leanWorkflowContent = `name: Lean Action CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - uses: leanprover/lean-action@v1
+`;
+
 /** Convert kebab-case crate name to PascalCase Lean package name. */
 function toPascalCase(name: string): string {
   return name
@@ -19,23 +37,27 @@ function lakefileContent(opts: {
   aeneasRev: string;
   extractionDir: string;
 }): string {
-  return `[package]
-name = "${opts.leanPackageName}"
+  return `name = "${opts.leanPackageName}"
 version = "0.1.0"
-leanOptions = []
+defaultTargets = ["${opts.leanPackageName}"]
+
+[leanOptions]
+autoImplicit = false
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+maxRecDepth = 10000
 
 [[require]]
 name = "aeneas"
 git = "${opts.aeneasRepo}"
+subDir = "backends/lean"
 rev = "${opts.aeneasRev}"
 
 [[lean_lib]]
 name = "${opts.extractionDir}"
-roots = ["${opts.extractionDir}"]
 
 [[lean_lib]]
 name = "Proof"
-roots = ["Proof"]
 `;
 }
 
@@ -131,6 +153,27 @@ export async function leanInitCommand(config: AeneasConfig, root: string): Promi
   const gitkeep = path.join(proofDir, "Proof", ".gitkeep");
   if (!fs.existsSync(gitkeep)) {
     fs.writeFileSync(gitkeep, "", "utf-8");
+  }
+
+  // Append Lean entries to .gitignore if not already present
+  const gitignorePath = path.join(root, ".gitignore");
+  const gitignoreEntries = [".lake/", "FunsExternal_Template.lean", "TypesExternal_Template.lean"];
+  const existingGitignore = fs.existsSync(gitignorePath)
+    ? fs.readFileSync(gitignorePath, "utf-8")
+    : "";
+  const missing = gitignoreEntries.filter((e) => !existingGitignore.split("\n").includes(e));
+  if (missing.length > 0) {
+    const block = "\n# Lean & Aeneas\n" + missing.join("\n") + "\n";
+    fs.appendFileSync(gitignorePath, block, "utf-8");
+    console.log(chalk.green(`  ✓ Updated .gitignore`));
+  }
+
+  // Write lean CI workflow
+  const workflowFile = path.join(root, LEAN_WORKFLOW_PATH);
+  if (!fs.existsSync(workflowFile)) {
+    fs.mkdirSync(path.dirname(workflowFile), { recursive: true });
+    fs.writeFileSync(workflowFile, leanWorkflowContent, "utf-8");
+    console.log(chalk.green(`  ✓ Created ${LEAN_WORKFLOW_PATH}`));
   }
 
   // Suggest updating aeneas_args.dest
