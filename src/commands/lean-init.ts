@@ -57,7 +57,7 @@ rev = "${opts.aeneasRev}"
 name = "${opts.extractionDir}"
 
 [[lean_lib]]
-name = "Proof"
+name = "${opts.leanPackageName}"
 `;
 }
 
@@ -130,7 +130,7 @@ export async function leanInitCommand(config: AeneasConfig, root: string): Promi
   // Create directories
   fs.mkdirSync(proofDir, { recursive: true });
   fs.mkdirSync(path.join(proofDir, extractionDir), { recursive: true });
-  fs.mkdirSync(path.join(proofDir, "Proof"), { recursive: true });
+  fs.mkdirSync(path.join(proofDir, leanPackageName), { recursive: true });
 
   // Write lakefile.toml
   const lakefile = lakefileContent({
@@ -149,10 +149,30 @@ export async function leanInitCommand(config: AeneasConfig, root: string): Promi
     console.log(chalk.green(`  ✓ Created ${path.relative(root, toolchainPath)}`));
   }
 
-  // Write .gitkeep in Proof/ so it's tracked
-  const gitkeep = path.join(proofDir, "Proof", ".gitkeep");
-  if (!fs.existsSync(gitkeep)) {
-    fs.writeFileSync(gitkeep, "", "utf-8");
+  // Write main Lean file that imports extraction outputs
+  const mainLeanPath = path.join(proofDir, `${leanPackageName}.lean`);
+  if (!fs.existsSync(mainLeanPath)) {
+    const mainLeanContent = [
+      `import ${extractionDir}.Funs`,
+      `import ${extractionDir}.Types`,
+      `import ${extractionDir}.FunsExternal`,
+      `import ${extractionDir}.TypesExternal`,
+      "",
+    ].join("\n");
+    fs.writeFileSync(mainLeanPath, mainLeanContent, "utf-8");
+    console.log(chalk.green(`  ✓ Created ${path.relative(root, mainLeanPath)}`));
+  }
+
+  // Write README in project directory
+  const projectReadme = path.join(proofDir, leanPackageName, "README.md");
+  fs.mkdirSync(path.join(proofDir, leanPackageName), { recursive: true });
+  if (!fs.existsSync(projectReadme)) {
+    fs.writeFileSync(
+      projectReadme,
+      `# ${leanPackageName}\n\nThis is the location to add spec theorems and proofs.\n`,
+      "utf-8",
+    );
+    console.log(chalk.green(`  ✓ Created ${path.relative(root, projectReadme)}`));
   }
 
   // Append Lean entries to .gitignore if not already present
