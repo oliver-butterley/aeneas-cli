@@ -36,7 +36,7 @@ function buildConfigContent(opts: {
   dest: string;
 }): string {
   return `# Aeneas extraction configuration
-# See: https://github.com/oliver-butterley/aeneas-cli
+# See: https://www.npmjs.com/package/aeneas-cli
 
 aeneas:
   commit: "${opts.commit}" # pinned commit hash (or branch name)
