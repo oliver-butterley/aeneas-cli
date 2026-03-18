@@ -1,30 +1,20 @@
 # Changelog
 
-## [0.1.1] - 2026-03-12
+## [0.1.1] - 2026-03-18
 
 ### Added
 
-- Generate GitHub CI workflow (`aeneas-cli ci`) with caching, diff check, and pinned CLI version
+- Regex support in tweaks: use `regex` key instead of `find` for pattern matching
+- Generate GitHub CI workflows (`aeneas.yml` and `lean.yml`)
+- `lean-init`: creates lakefile, toolchain, CI, main Lean file, project README, and `.gitignore` entries
 - Auto-detect crate name from `Cargo.toml` during `init`
-- Default aeneas commit to latest on main (via `git ls-remote`)
-- Interactive `init` when launched from menu (prompts for each field with confirmation)
-- Non-interactive `init` command using sensible defaults (`aeneas-cli init`)
-- Initialize Lean project menu option (placeholder)
-- Feedback link in menu footer
-- npm trusted publisher workflow for automated releases
+- Interactive and non-interactive `init` modes
 
 ### Fixed
 
-- Show init menu when no config file exists (was crashing with "Could not find" error)
-- Exit when `charon.start_from` is empty in config
-- Allow empty args for all array config fields
-- Stream output during install steps
-
-### Changed
-
-- Removed `loops-to-rec` from default config template
-- Updated GitHub Actions to v6 and Node.js to 24
-- CI runs on all branches, not just default
+- Corrected `lakefile.toml` template (top-level keys, `subDir`, `[leanOptions]`)
+- Show init menu when no config file exists
+- Extraction directory default reads from config
 
 ## [0.1.0] - 2026-03-08
 
