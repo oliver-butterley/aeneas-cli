@@ -10,7 +10,6 @@ export interface AeneasConfig {
     repo: string;
   };
   charon: {
-    preset: string;
     cargo_args: string[];
     start_from: string[];
     exclude: string[];
@@ -27,7 +26,8 @@ export interface AeneasConfig {
   tweaks: {
     files: string[];
     substitutions: Array<{
-      find: string;
+      find?: string;
+      regex?: string;
       replace: string;
     }>;
   };
@@ -74,18 +74,17 @@ export function loadConfig(configPath?: string): {
   if (!config.aeneas?.repo) {
     throw new ConfigError("Missing required field: aeneas.repo");
   }
-  if (!config.charon?.start_from?.length) {
-    throw new ConfigError("Missing required field: charon.start_from");
-  }
   if (!config.crate?.dir) {
     throw new ConfigError("Missing required field: crate.dir");
   }
 
   // Apply defaults
-  config.charon.preset = config.charon.preset ?? "aeneas";
+  config.charon = config.charon ?? ({} as AeneasConfig["charon"]);
   config.charon.cargo_args = config.charon.cargo_args ?? [];
+  config.charon.start_from = config.charon.start_from ?? [];
   config.charon.exclude = config.charon.exclude ?? [];
   config.charon.opaque = config.charon.opaque ?? [];
+  config.aeneas_args = config.aeneas_args ?? ({} as AeneasConfig["aeneas_args"]);
   config.aeneas_args.options = config.aeneas_args.options ?? [];
   config.aeneas_args.dest = config.aeneas_args.dest ?? "output";
   config.crate.name = config.crate.name ?? config.crate.dir.replace(/-/g, "_");

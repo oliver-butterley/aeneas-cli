@@ -75,6 +75,16 @@ export async function commitInfo(dir: string): Promise<CommitInfo> {
   };
 }
 
+export async function lsRemoteHead(repo: string, ref = "HEAD"): Promise<string | null> {
+  try {
+    const output = await run("git", ["ls-remote", repo, ref], { silent: true });
+    const hash = output.split("\t")[0]?.trim();
+    return hash || null;
+  } catch {
+    return null;
+  }
+}
+
 export async function getLocalCommit(repoDir: string): Promise<string | null> {
   try {
     const output = await run("git", ["rev-parse", "HEAD"], {

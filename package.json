@@ -1,6 +1,6 @@
 {
   "name": "aeneas-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI tool for managing Aeneas extraction from Rust to Lean",
   "type": "module",
   "bin": {

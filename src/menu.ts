@@ -1,13 +1,17 @@
 import fs from "node:fs";
 import chalk from "chalk";
 import { select } from "@inquirer/prompts";
-import { type AeneasConfig } from "./config.js";
+import { type AeneasConfig, loadConfig } from "./config.js";
 import { getAeneasRepoDir } from "./lib/paths.js";
+import { which } from "./lib/shell.js";
 import * as git from "./lib/git.js";
 import { statusCommand } from "./commands/status.js";
 import { extractCommand } from "./commands/extract.js";
 import { installCommand } from "./commands/install.js";
 import { updateCommand } from "./commands/update.js";
+import { initCommand } from "./commands/init.js";
+import { ciCommand, hasAeneasWorkflow } from "./commands/ci.js";
+import { leanInitCommand } from "./commands/lean-init.js";
 
 async function showHeader(config: AeneasConfig, root: string): Promise<void> {
   const repoDir = getAeneasRepoDir(root);
@@ -48,19 +52,58 @@ async function showHeader(config: AeneasConfig, root: string): Promise<void> {
   console.log();
 }
 
-export async function showMenu(config: AeneasConfig, root: string): Promise<void> {
+export async function showInitMenu(): Promise<void> {
+  const charonPath = await which("charon");
+  const aeneasPath = await which("aeneas");
+
+  console.log(chalk.bold("Aeneas CLI") + " · no config file found\n");
+  console.log(`  Charon:  ${charonPath ?? chalk.red("not found in PATH")}`);
+  console.log(`  Aeneas:  ${aeneasPath ?? chalk.red("not found in PATH")}`);
+  console.log();
+
+  const action = await select({
+    message: "What would you like to do?",
+    choices: [
+      { name: "Create aeneas-config.yml", value: "init" },
+      { name: "Exit", value: "exit" },
+    ],
+  });
+
+  if (action === "init") {
+    await initCommand({ interactive: true });
+    console.log();
+    // Config now exists — load it and show the full menu
+    const { config, root } = loadConfig();
+    await showMenu(config, root);
+  }
+}
+
+export async function showMenu(initialConfig: AeneasConfig, root: string): Promise<void> {
+  let config = initialConfig;
   while (true) {
+    // Reload config each iteration to pick up file changes
+    try {
+      ({ config } = loadConfig());
+    } catch {
+      // fall back to previous config
+    }
     await showHeader(config, root);
+
+    const choices = [
+      { name: "Extract to Lean", value: "extract" },
+      { name: "Clone and build Aeneas", value: "install" },
+      { name: "Select Aeneas version", value: "update" },
+      { name: "Show status", value: "status" },
+    ];
+    choices.push({ name: "Initialize Lean project", value: "lean-init" });
+    if (!hasAeneasWorkflow(root)) {
+      choices.push({ name: "Generate GitHub CI workflow", value: "ci" });
+    }
+    choices.push({ name: "Exit", value: "exit" });
 
     const action = await select({
       message: "What would you like to do?",
-      choices: [
-        { name: "Extract to Lean", value: "extract" },
-        { name: "Clone and build Aeneas", value: "install" },
-        { name: "Select Aeneas version", value: "update" },
-        { name: "Show status", value: "status" },
-        { name: "Exit", value: "exit" },
-      ],
+      choices,
     });
 
     switch (action) {
@@ -76,10 +119,22 @@ export async function showMenu(config: AeneasConfig, root: string): Promise<void
       case "status":
         await statusCommand(config, root);
         break;
+      case "lean-init":
+        await leanInitCommand(config, root);
+        break;
+      case "ci":
+        await ciCommand(root);
+        break;
       case "exit":
         return;
     }
 
+    console.log();
+    console.log(
+      chalk.dim(
+        "Something can be improved with this CLI? Issue/PR: https://www.npmjs.com/package/aeneas-cli",
+      ),
+    );
     console.log();
   }
 }

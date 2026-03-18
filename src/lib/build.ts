@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { run, which } from "./shell.js";
+import { run, runStreaming, which } from "./shell.js";
 import { DependencyError } from "./errors.js";
 
 const INSTALL_HINTS: Record<string, string> = {
@@ -63,9 +63,8 @@ export async function setupOcaml(): Promise<Record<string, string>> {
   const exists = switches.split("\n").some((s) => s.trim() === switchName);
 
   if (!exists) {
-    await run("opam", ["switch", "create", switchName], {
-      label: "Creating OCaml 5.2.0 switch...",
-    });
+    console.log("  Creating OCaml 5.2.0 switch...");
+    await runStreaming("opam", ["switch", "create", switchName]);
   } else {
     console.log("  OCaml 5.2.0 switch already exists");
   }
@@ -90,14 +89,10 @@ const OCAML_DEPS = [
 ];
 
 export async function installOcamlDeps(env: Record<string, string>): Promise<void> {
-  await run("opam", ["update"], {
-    env,
-    label: "Updating opam packages...",
-  });
-  await run("opam", ["install", "-y", ...OCAML_DEPS], {
-    env,
-    label: "Installing OCaml dependencies...",
-  });
+  console.log("  Updating opam packages...");
+  await runStreaming("opam", ["update"], { env });
+  console.log("  Installing OCaml dependencies...");
+  await runStreaming("opam", ["install", "-y", ...OCAML_DEPS], { env });
 }
 
 function parseToolchainChannel(filePath: string): string | null {
@@ -108,12 +103,10 @@ function parseToolchainChannel(filePath: string): string | null {
 }
 
 async function installRustToolchain(toolchain: string): Promise<void> {
-  await run("rustup", ["toolchain", "install", toolchain], {
-    label: `Installing Rust toolchain ${toolchain}...`,
-  });
-  await run("rustup", ["component", "add", "--toolchain", toolchain, "rustfmt"], {
-    label: "Adding rustfmt component...",
-  });
+  console.log(`  Installing Rust toolchain ${toolchain}...`);
+  await runStreaming("rustup", ["toolchain", "install", toolchain]);
+  console.log("  Adding rustfmt component...");
+  await runStreaming("rustup", ["component", "add", "--toolchain", toolchain, "rustfmt"]);
 }
 
 export async function setupRustToolchain(charonDir: string): Promise<void> {
@@ -126,17 +119,9 @@ export async function setupRustToolchain(charonDir: string): Promise<void> {
 }
 
 export async function buildCharon(aeneasDir: string, env: Record<string, string>): Promise<void> {
-  await run("make", ["setup-charon"], {
-    cwd: aeneasDir,
-    env,
-    label: "Building Charon (this may take a few minutes)...",
-  });
+  await runStreaming("make", ["setup-charon"], { cwd: aeneasDir, env });
 }
 
 export async function buildAeneas(aeneasDir: string, env: Record<string, string>): Promise<void> {
-  await run("make", [], {
-    cwd: aeneasDir,
-    env,
-    label: "Building Aeneas...",
-  });
+  await runStreaming("make", [], { cwd: aeneasDir, env });
 }

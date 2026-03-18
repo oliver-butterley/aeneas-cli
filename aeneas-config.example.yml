@@ -1,5 +1,5 @@
 # Aeneas extraction configuration
-# See: https://github.com/AeneasVerif/aeneas
+# See: https://github.com/oliver-butterley/aeneas-cli
 # Generate this file with: aeneas-cli init
 
 aeneas:
@@ -11,7 +11,6 @@ crate:
   name: "my_crate" # crate name as in Cargo.toml
 
 charon:
-  preset: aeneas
   cargo_args: [] # extra cargo args, e.g. ["--no-default-features", "--features", "alloc"]
   start_from: # Rust module paths to extract
     - "my_crate::module_a"
@@ -22,16 +21,18 @@ charon:
 
 aeneas_args:
   options:
-    - loops-to-rec
     - split-files
   dest: "LeanOutput" # output directory for generated Lean files
 
-# Post-extraction tweaks: literal find/replace applied in order
+# Post-extraction tweaks: find/replace applied in order to generated Lean files.
+# Each substitution is literal by default. Set regex: true for regex matching.
 tweaks:
   files:
     - "Funs.lean"
     - "Types.lean"
   substitutions: []
-    # Example:
+    # Examples:
     # - find: "text to find"
     #   replace: "replacement text"
+    # - regex: "def (?<name>old_\\w+)"
+    #   replace: "def renamed_$<name>"

@@ -34,7 +34,7 @@ export async function extractCommand(
   const logsDir = path.join(root, ".logs");
 
   // Build charon args
-  const charonArgs: string[] = ["cargo", `--preset=${config.charon.preset}`];
+  const charonArgs: string[] = ["cargo", "--preset=aeneas"];
 
   for (const item of config.charon.start_from) {
     charonArgs.push("--start-from", item);
@@ -46,7 +46,11 @@ export async function extractCommand(
     charonArgs.push("--opaque", item);
   }
 
-  charonArgs.push("--", "-p", config.crate.dir, ...config.charon.cargo_args);
+  const cargoArgs = [...config.charon.cargo_args];
+  if (config.crate.dir !== ".") {
+    cargoArgs.unshift("-p", config.crate.name);
+  }
+  charonArgs.push("--", ...cargoArgs);
 
   // Build aeneas args
   const aeneasArgs: string[] = [

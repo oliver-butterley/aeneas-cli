@@ -58,7 +58,6 @@ crate:
   name: "my_crate" # crate name as in Cargo.toml
 
 charon:
-  preset: aeneas
   cargo_args: ["--no-default-features", "--features", "alloc"]
   start_from: # modules to extract
     - "my_crate::module_a"
@@ -69,7 +68,6 @@ charon:
 
 aeneas_args:
   options:
-    - loops-to-rec
     - split-files
   dest: "LeanOutput" # output directory for generated files
 
