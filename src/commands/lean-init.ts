@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: leanprover/lean-action@v1
 `;
 
@@ -101,7 +101,7 @@ export async function leanInitCommand(config: AeneasConfig, root: string): Promi
 
   const extractionDir = await input({
     message: "Extraction output directory name",
-    default: "Extraction",
+    default: config.aeneas_args.dest,
   });
 
   // Check if lakefile.toml already exists
@@ -165,7 +165,6 @@ export async function leanInitCommand(config: AeneasConfig, root: string): Promi
 
   // Write README in project directory
   const projectReadme = path.join(proofDir, leanPackageName, "README.md");
-  fs.mkdirSync(path.join(proofDir, leanPackageName), { recursive: true });
   if (!fs.existsSync(projectReadme)) {
     fs.writeFileSync(
       projectReadme,

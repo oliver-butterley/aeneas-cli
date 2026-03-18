@@ -19,9 +19,10 @@ export function applyTweaks(filePath: string, substitutions: Substitution[]): Se
     const sub = substitutions[i];
     if (sub.regex) {
       const re = new RegExp(sub.regex, "g");
-      if (!re.test(content)) continue;
+      const result = content.replace(re, sub.replace);
+      if (result === content) continue;
       matched.add(i);
-      content = content.replace(re, sub.replace);
+      content = result;
     } else if (sub.find) {
       if (!content.includes(sub.find)) continue;
       matched.add(i);
