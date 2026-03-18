@@ -62,11 +62,13 @@ crate:
 tweaks:
   files: [] # Lean files to patch, e.g. ["Funs.lean", "Types.lean"]
   substitutions: []
-  # Example:
+  # Examples:
   # - find: "someGeneratedName"
   #   replace: "betterName"
   # - find: "open Result"
   #   replace: "open Result\\nopen MyModule"
+  # - regex: "def (?<name>old_\\w+)"
+  #   replace: "def renamed_$<name>"
 `;
 }
 

@@ -24,12 +24,15 @@ aeneas_args:
     - split-files
   dest: "LeanOutput" # output directory for generated Lean files
 
-# Post-extraction tweaks: literal find/replace applied in order
+# Post-extraction tweaks: find/replace applied in order to generated Lean files.
+# Each substitution is literal by default. Set regex: true for regex matching.
 tweaks:
   files:
     - "Funs.lean"
     - "Types.lean"
   substitutions: []
-    # Example:
+    # Examples:
     # - find: "text to find"
     #   replace: "replacement text"
+    # - regex: "def (?<name>old_\\w+)"
+    #   replace: "def renamed_$<name>"

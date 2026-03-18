@@ -2,7 +2,8 @@ import fs from "node:fs";
 import chalk from "chalk";
 
 export interface Substitution {
-  find: string;
+  find?: string;
+  regex?: string;
   replace: string;
 }
 
@@ -16,9 +17,16 @@ export function applyTweaks(filePath: string, substitutions: Substitution[]): Se
 
   for (let i = 0; i < substitutions.length; i++) {
     const sub = substitutions[i];
-    if (!content.includes(sub.find)) continue;
-    matched.add(i);
-    content = content.replaceAll(sub.find, sub.replace);
+    if (sub.regex) {
+      const re = new RegExp(sub.regex, "g");
+      if (!re.test(content)) continue;
+      matched.add(i);
+      content = content.replace(re, sub.replace);
+    } else if (sub.find) {
+      if (!content.includes(sub.find)) continue;
+      matched.add(i);
+      content = content.replaceAll(sub.find, sub.replace);
+    }
   }
 
   fs.writeFileSync(filePath, content, "utf-8");
@@ -40,10 +48,8 @@ export function warnUnmatchedTweaks(
   const unmatched: string[] = [];
   for (let i = 0; i < substitutions.length; i++) {
     if (allMatched.has(i)) continue;
-    const preview =
-      substitutions[i].find.length > 60
-        ? substitutions[i].find.substring(0, 60) + "..."
-        : substitutions[i].find;
+    const pattern = substitutions[i].find ?? substitutions[i].regex ?? "";
+    const preview = pattern.length > 60 ? pattern.substring(0, 60) + "..." : pattern;
     unmatched.push(`Substitution #${i + 1} not found in any file: "${preview}"`);
   }
 

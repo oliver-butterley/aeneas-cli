@@ -26,7 +26,8 @@ export interface AeneasConfig {
   tweaks: {
     files: string[];
     substitutions: Array<{
-      find: string;
+      find?: string;
+      regex?: string;
       replace: string;
     }>;
   };
